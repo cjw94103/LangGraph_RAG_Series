@@ -55,3 +55,6 @@ streamlit run Home.py --server.port [port_num]
 |Long RAG|https://arxiv.org/abs/2410.18050|완료|
 |Corrective RAG|https://arxiv.org/abs/2401.15884|완료|
 |Self RAG|https://arxiv.org/abs/2310.11511|완료|
+
+이 프로젝트는 비정기적으로 (최대한 자주) 업데이트 될 예정입니다. 궁긍하신 사항은 깃허브 이슈나 제 개인 메일 계정 cjw94103@gmail.com으로 연락주시길 바랍니다.
+감사합니다.
