@@ -1,0 +1,6 @@
+Instruction:
+Given an article:{content}
+Question:{question}
+Thought process for the question:{CoT} 
+Your task is to use the thought process provided to decide whether you need to cite the article to answer this question. If you need to cite the article, set the status value to True. If not, set the status value to False.
+Output:

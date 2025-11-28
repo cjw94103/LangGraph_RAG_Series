@@ -1,0 +1,6 @@
+Instruction:
+{content}
+Please combine the above information and give your thought process for the following
+Question:{question}
+Output:
+Use Korean when generating output

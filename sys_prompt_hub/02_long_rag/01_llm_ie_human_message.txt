@@ -1,0 +1,6 @@
+Instruction:
+{content}
+Based on the above background, please output the information you need to cite to answer the question below.
+{question}
+Output:
+Use Korean when generating output
