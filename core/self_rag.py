@@ -159,13 +159,22 @@ class SELFRAG:
     def llm_answer(self, state : GraphState, config : RunnableConfig):
         question = state["question"]
         result_chunks = state["result_chunks"]
+        
         llm_sys_prompt = state["llm_sys_prompt"]
+        answer_llm_name = config.get("configurable", {}).get("answer_llm_name")
+        answer_llm_temperature = config.get("configurable", {}).get("answer_llm_temperature")
+
+        # streaming 대상만 이 코드를 사용
+        chain = self.answer_llm.with_config(configurable={"model": answer_llm_name, 
+                                                         "model_provider": extract_model_provider(answer_llm_name),
+                                                         "max_tokens" : model_name_to_max_tokens(answer_llm_name),
+                                                         "temperature" : answer_llm_temperature})
 
         documents = ""
         for chunk in result_chunks:
             documents += content_template.format(source=chunk.metadata["source"], page=str(chunk.metadata["page"]), content=chunk.page_content)
 
-        answer = self.answer_llm.invoke({"llm_sys_prompt" : llm_sys_prompt, "question" : question, "documents" : documents})
+        answer = chain.invoke({"llm_sys_prompt" : llm_sys_prompt, "question" : question, "documents" : documents})
 
         return {"answer" : answer}
 
