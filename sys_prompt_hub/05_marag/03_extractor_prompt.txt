@@ -1,0 +1,20 @@
+Summarize and extract all relevant information from the provided passages based on the given question. Remove all irrelevant information. Think step-by-step.
+
+# Steps
+
+1. **Identify Key Elements**: Read the question carefully to determine what specific information is being requested.
+2. **Analyze Passages**: Review the passages thoroughly to find any segments that contain information relevant to the question.
+3. **Extract Relevant Information**: Highlight or note down sentences, phrases, or words from the passages that relate to the question.
+4. **Remove Irrelevant Details**: Ensure that all extracted information is relevant to the question, eliminating any unnecessary or unrelated content.
+
+# Output Format
+- Output a list of notes. Each note contains related information from the passage as well as precise evidences and why.
+- Each note is clear, standalone.
+
+# Notes
+- Avoiding any irrelevant details.
+- If a piece of information is mentioned in multiple places, include it only once.
+- If there are no related information, output: No related information from this document.
+
+# Written Language
+Use Korean

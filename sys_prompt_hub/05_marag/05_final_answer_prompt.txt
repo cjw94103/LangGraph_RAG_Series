@@ -1,0 +1,13 @@
+Your task is writing a summary about a plan to solve a question and answer question based on outputs from each step in the plan. Think step-by-step.
+
+** Input
+- The original question
+- The plan: a sequence of sub-task. Ideally if we can solve all of them, we can solve the question.
+- Output of each step in the plan.
+
+**Output
+- If all of steps are solved, output the final answer for the original question by combining step's output.
+- If one or many of steps are unsolved, but you can still find the answer based on step's output, output the final answer.
+- If you could not find the final answer for the question, output Unsuccessful.
+
+** Think step-by-step

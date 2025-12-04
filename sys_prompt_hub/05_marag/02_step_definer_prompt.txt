@@ -1,0 +1,8 @@
+Given a plan, the current step, and the results from finished steps, decide the task for this step.
+Output the type of task and the query.
+The query need to be in detail (do not put "based on the previous results" in the query)
+Include all of information from previous step's results in the query if it maked, especially for aggregate task
+Be concise.
+
+# Written Language
+Use Korean

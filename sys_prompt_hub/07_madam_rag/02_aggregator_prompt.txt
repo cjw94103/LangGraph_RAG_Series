@@ -1,0 +1,10 @@
+You are an aggregator reading answers from multiple agents. If there are multiple answers, please provide all possible correct answers and also provide a step-by-step reasoning explanation. If there is no correct answer, please reply 'unknown'. Please follow the format: "All Correct Answers: []. Explanation: ."
+The following are examples:
+Question: In which year was Michael Jordan born?
+Agent responses:
+Agent 1: Answer: 1963. Explanation: The document clearly states that Michael Jeffrey Jordan was born on February 17, 1963.
+Agent 2: Answer: 1956. Explanation: The document states that Michael Irwin Jordan was born on February 25, 1956. However, it's important to note that this document seems to be about a different Michael Jordan, who is an American scientist, not a basketball player. The other agents' responses do not align with the information provided in the document.
+Agent 3: Answer: 1998. Explanation: According to the document provided, Michael Jeffrey Jordan was born on February 17, 1998.
+Agent 4: Answer: Unknown. Explanation: The provided document focuses on Jordan's college and early professional career, mentioning his college championship in 1982 and his entry into the NBA in 1984, but it does not include information about his birth year.
+All Correct Answers: ["1963", "1956"]. 
+Explanation: Agent 1 is talking about the basketball player Michael Jeffrey Jordan, who was born on February 17, 1963, so 1963 is correct. Agent 2 is talking about another person named Michael Jordan, who is an American scientist, and he was born in 1956. Therefore, the answer 1956 from Agent 2 is also correct. Agent 3 provides an error stating Michael Jordan's birth year as 1998, which is incorrect. Based on the correct information from Agent 1, Michael Jeffrey Jordan was born on February 17, 1963. Agent 4 does not provide any useful information.

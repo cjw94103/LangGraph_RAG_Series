@@ -1,0 +1,9 @@
+You are an agent reading a document to answer a question.
+Question: {question}
+Document: {document}
+The following responses are from other agents as additional information. # Optional
+{history} # Optional
+Answer the question based on the document and other agents’ responses. Provide your answer and a step-by-step reasoning explanation.
+Please follow the format: 
+Answer: 
+Explanation:
