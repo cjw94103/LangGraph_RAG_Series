@@ -4,12 +4,19 @@ import pickle
 import faiss
 
 from pathlib import Path
-from langchain_community.vectorstores import FAISS
+from langchain_openai import ChatOpenAI
+from langchain_community.vectorstores import FAISS, Neo4jVector
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_experimental.graph_transformers import LLMGraphTransformer
+from langchain_community.graphs import Neo4jGraph
 from langchain.storage import InMemoryStore
 from langchain.retrievers import ParentDocumentRetriever
+
+
+
 from utils.document_loader import process_middle_docx, process_fast_hwpx, load_pdf_documents, load_txt_as_documents, load_md_as_documents
+from utils.build_graph_db_with_kuzu import HybridKuzuRAG
 
 # OpenAI API Key 설정
 def openai_api_setting(api_key=None):
@@ -48,7 +55,7 @@ def make_uploadfile_to_retriever(filepaths,
 
     parent_store = InMemoryStore()
     user_retriever = ParentDocumentRetriever(vectorstore=vectorstore, 
-                                             docstore=parent_store, 
+                                             docstore=parent_store,
                                              parent_splitter=parent_splitter, 
                                              child_splitter=child_splitter, 
                                              search_kwargs={"k": top_k}, 
@@ -102,6 +109,103 @@ def make_uploadfile_to_dense_retriever(filepaths,
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": top_k})
 
     return retriever
+
+## neo4j graph retriever
+def make_uploadfile_to_graph_retriever_neo4j(filepaths,
+                                             neo4j_url=None,
+                                             neo4j_username=None,
+                                             neo4j_password=None,
+                                             llm_model="gpt-4.1-nano",
+                                             embedding_function=None,
+                                             chunk_size=1000,
+                                             chunk_overlap=100,
+                                             top_k=3):
+
+    # 문서를 document 객체로 wrapping
+    documents = []
+    for path in filepaths:
+        if ".docx" in path:
+            documents.extend(process_middle_docx(path))
+        elif ".hwpx" in path:
+            documents.extend(process_fast_hwpx(path))
+        elif ".pdf" in path:
+            documents.extend(load_pdf_documents(path))
+        elif ".txt" in path:
+            documents.extend(load_txt_as_documents(path))
+        elif ".md" in path:
+            documents.extend(load_md_as_documents(path))
+
+    # text split
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    documents = text_splitter.split_documents(documents)
+
+    # graph 초기화
+    graph = Neo4jGraph(url=neo4j_url, 
+                       username=neo4j_username,
+                       password=neo4j_password)
+
+    # LLM 설정
+    llm = ChatOpenAI(temperature=0, model=llm_model)
+    
+    # Graph Transformer 생성
+    llm_transformer = LLMGraphTransformer(llm=llm)
+
+    # 문서를 그래프 구조로 변환
+    graph_documents = llm_transformer.convert_to_graph_documents(documents)
+
+    # Neo4j에 저장
+    graph.add_graph_documents(graph_documents, 
+                              baseEntityLabel=True, 
+                              include_source=True)
+
+    # 3. 벡터 인덱스 및 Retriever 생성
+    vector_index = Neo4jVector.from_existing_graph(embedding=embedding_function, 
+                                                   url=neo4j_url,
+                                                   username=neo4j_username,
+                                                   password=neo4j_password,
+                                                   index_name="document_vector_index",
+                                                   node_label="Document",
+                                                   text_node_properties=["text"],
+                                                   embedding_node_property="embedding")
+
+    graph_retriever = vector_index.as_retriever(search_kwargs={"k": top_k})
+
+    return graph, graph_retriever
+
+## kuzu graph retriever
+def make_uploadfile_to_graph_retriever_kuzu(filepaths,
+                                          llm_model="gpt-4.1-nano",
+                                          embedding_function=None,
+                                          chunk_size=1000,
+                                          chunk_overlap=100,
+                                          top_k=3):
+    docs = []
+    
+    for path in filepaths:
+        if ".docx" in path:
+            docs.extend(process_middle_docx(path))
+        elif ".hwpx" in path:
+            docs.extend(process_fast_hwpx(path))
+        elif ".pdf" in path:
+            docs.extend(load_pdf_documents(path))
+        elif ".txt" in path:
+            docs.extend(load_txt_as_documents(path))
+        elif ".md" in path:
+            docs.extend(load_md_as_documents(path))
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    split_docs = text_splitter.split_documents(docs)
+
+    rag = HybridKuzuRAG(llm_model=llm_model,
+                        embedding_model=embedding_function,
+                        in_memory=True)
+    rag.build_from_documents(split_docs)
+
+    graph_retriever = rag.create_retriever(
+        search_mode="both",  # "graph", "vector", "both"
+        vector_k=top_k)
+
+    return rag, graph_retriever
 
 def save_parent_retriever(retriever, save_dir):
     """ParentDocumentRetriever를 로컬에 저장"""
