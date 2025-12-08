@@ -46,6 +46,7 @@ streamlit run Home.py --server.port [port_num]
 - 파일 업로드 : RAG 실행을 위한 문서를 업로드 합니다. .docx, .pdf, .hwpx, .txt, .md 파일을 지원합니다.
 - OpenAI API Key : LLM를 API로 사용하기 위한 OpenAI의 api key를 입력합니다. OpenAI Playground에서 회원가입 후 발급받을 수 있습니다.
 - Tavily API Key : 특정 RAG의 경우, 웹 검색을 필요로 합니다. Tavliy 회원가입 후 api key를 발급받을 수 있습니다.
+- Neo4j 관련 : Graph RAG의 경우, graphdb 생성을 필요로 합니다. neo4j 회원가입 후 instance 만드시면 텍스트 파일로 username, url, password를 발급받을 수 있습니다.
 
 # 3. RAG 파이프라인 구현 현황
 
@@ -58,6 +59,7 @@ streamlit run Home.py --server.port [port_num]
 |MARAG|https://arxiv.org/abs/2505.20096|완료|
 |MainRAG|https://arxiv.org/abs/2501.00332|완료|
 |MadamRAG|https://arxiv.org/abs/2504.13079|완료|
+|Naive GraphRAG|없음|완료|
 
 이 프로젝트는 비정기적으로 (최대한 자주) 업데이트 될 예정입니다. 궁긍하신 사항은 깃허브 이슈나 제 개인 메일 계정 cjw94103@gmail.com으로 연락주시길 바랍니다.
 감사합니다.
