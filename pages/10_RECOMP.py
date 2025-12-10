@@ -2,11 +2,11 @@ import streamlit as st
 import time
 import uuid
 
-from utils.helper import openai_api_setting, make_uploadfile_to_retriever, load_string_from_txt
+from utils.helper import openai_api_setting, make_uploadfile_to_dense_retriever, load_string_from_txt
 from langchain_openai import OpenAIEmbeddings
 
 from langchain_core.runnables import RunnableConfig
-from core.naive_rag import NaiveRAG
+from core.recomp import RECOMP
 
 from utils.web_design import set_web_design
 from utils.upload_utils import save_cache_files
@@ -14,7 +14,7 @@ from utils.upload_utils import save_cache_files
 ## Web Design
 set_web_design(page_title="LangGraph RAG Algorithms", 
                page_icon="./logo_imgs/logo.png", 
-               title="Naive RAG", 
+               title="RECOMP", 
                caption="",
                logo_path = './logo_imgs/logo_page.png')
 
@@ -45,27 +45,21 @@ if process:
     ## OpenAI API 설정
     openai_api_setting(openai_api_key)
 
-    ## 시스템 프롬프트
-    st.session_state.llm_sys_prompt = load_string_from_txt("./sys_prompt_hub/01_naive_rag/llm_sys_prompt.txt")
-
     ## 업로드 파일 처리
     with st.spinner("업로드한 파일을 처리하고 있습니다...", show_time=True):
         filepaths = save_cache_files(directory="./user_upload_files", uploaded_files=uploaded_files)
 
     ## parent-child retriever 생성
-    retriever = make_uploadfile_to_retriever(filepaths,
-                                             embedding_function=OpenAIEmbeddings(model="text-embedding-3-small"),
-                                             embedding_dim=1536,
-                                             parent_chunk_size=1000,
-                                             parent_chunk_overlap=100,
-                                             child_chunk_size=200,
-                                             child_chunk_overlap=20,
-                                             top_k=st.session_state.top_k)
+    retriever = make_uploadfile_to_dense_retriever(filepaths,
+                                                   embedding_function=OpenAIEmbeddings(model="text-embedding-3-small"),
+                                                   chunk_size=1000,
+                                                   chunk_overlap=100,
+                                                   top_k=st.session_state.top_k)
     st.session_state.retriever = retriever
 
     ## graph 생성
     thread_id = str(uuid.uuid4())
-    graph_ins = NaiveRAG(retriever=st.session_state.retriever, top_k=st.session_state.top_k)
+    graph_ins = RECOMP(retriever=st.session_state.retriever, top_k=st.session_state.top_k)
     app = graph_ins.make_app_graph()
 
     st.session_state.thread_id = thread_id
@@ -75,9 +69,9 @@ if conver_init:
     st.session_state.pop('app', None)
     st.session_state.pop('messages', None)
 
-    graph_ins = NaiveRAG(retriever=st.session_state.retriever, top_k=st.session_state.top_k)
-    app = graph_ins.make_app_graph()
     thread_id = str(uuid.uuid4())
+    graph_ins = RECOMP(retriever=st.session_state.retriever, top_k=st.session_state.top_k)
+    app = graph_ins.make_app_graph()
 
     st.session_state.thread_id = thread_id
     st.session_state.app = app
@@ -102,8 +96,8 @@ if question := st.chat_input():
         inputs = {"question" : question,
                   "answer" : "",
                   "answer_contexts" : "",
-                  "chat_history" : [],
-                  "llm_sys_prompt" : st.session_state.llm_sys_prompt}
+                  "summary_contexts" : "",
+                  "chat_history" : []}
 
         output_str = ""
         def stream_data():
