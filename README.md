@@ -62,6 +62,7 @@ streamlit run Home.py --server.port [port_num]
 |Naive GraphRAG|없음|완료|
 |Self Route|https://arxiv.org/abs/2505.20664|완료|
 |RECOMP|https://arxiv.org/abs/2310.04408|완료|
+|WritingPath|https://arxiv.org/abs/2404.13919|완료|
 
 이 프로젝트는 비정기적으로 (최대한 자주) 업데이트 될 예정입니다. 궁긍하신 사항은 깃허브 이슈나 제 개인 메일 계정 cjw94103@gmail.com으로 연락주시길 바랍니다.
 감사합니다.
